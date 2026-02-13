@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Triage Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Triage Assistant</h1>
+            <p class="subtitle">AI-Powered Email Classification & Management</p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>Paste Your Email</h2>
+                <textarea 
+                    id="emailInput" 
+                    placeholder="Paste your email content here..."
+                    rows="10"
+                ></textarea>
+                <div class="button-group">
+                    <button onclick="classifyEmail()" class="btn btn-primary">Analyze Email</button>
+                    <button onclick="clearInput()" class="btn btn-clear">Clear</button>
+                </div>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <h2>Analysis Results</h2>
+                
+                <div class="result-card category-card">
+                    <h3>📁 Category</h3>
+                    <div class="category-badge" id="categoryBadge"></div>
+                    <p class="confidence">Confidence: <span id="confidence"></span>%</p>
+                </div>
+
+                <div class="result-card urgency-card">
+                    <h3>⚡ Urgency Level</h3>
+                    <div class="urgency-badge" id="urgencyBadge"></div>
+                    <p>Urgency Score: <span id="urgencyScore"></span></p>
+                </div>
+
+                <div class="result-card summary-card">
+                    <h3>📝 Summary</h3>
+                    <p id="summary"></p>
+                </div>
+
+                <div class="result-card reply-card">
+                    <h3>💬 Smart Reply Suggestion</h3>
+                    <div class="reply-box">
+                        <p id="smartReply"></p>
+                        <button onclick="copyReply()" class="btn btn-copy">Copy Reply</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing email...</p>
+            </div>
+
+            <div id="error" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function classifyEmail() {
+            const emailText = document.getElementById('emailInput').value.trim();
+            
+            if (!emailText) {
+                showError('Please enter email content');
+                return;
+            }
+
+            showLoading();
+            hideResults();
+            hideError();
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: emailText })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayResults(data) {
+            // Category
+            const categoryBadge = document.getElementById('categoryBadge');
+            categoryBadge.textContent = data.category;
+            categoryBadge.className = 'category-badge ' + data.category.toLowerCase();
+            
+            document.getElementById('confidence').textContent = data.confidence || 'N/A';
+
+            // Urgency
+            const urgencyBadge = document.getElementById('urgencyBadge');
+            urgencyBadge.textContent = data.urgency;
+            urgencyBadge.className = 'urgency-badge ' + data.urgency.toLowerCase();
+            document.getElementById('urgencyScore').textContent = data.urgency_score || 0;
+
+            // Summary
+            document.getElementById('summary').textContent = data.summary || 'No summary available';
+
+            // Smart Reply
+            document.getElementById('smartReply').textContent = data.smart_reply || 'No reply suggestion';
+
+            showResults();
+        }
+
+        function copyReply() {
+            const replyText = document.getElementById('smartReply').textContent;
+            navigator.clipboard.writeText(replyText).then(() => {
+                alert('Reply copied to clipboard!');
+            });
+        }
+
+        function clearInput() {
+            document.getElementById('emailInput').value = '';
+            hideResults();
+            hideError();
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showResults() {
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
