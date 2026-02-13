@@ -1,10 +1,10 @@
-# 📧 Email Triage Assistant
+#  Email Triage Assistant
 
 An AI-powered Email Triage Assistant that intelligently categorizes, summarizes, and generates smart replies for emails using Machine Learning and NLP.
 
 ---
 
-## 🚀 Project Overview
+ Project Overview
 
 Managing large volumes of emails manually is inefficient. This project builds an AI Agent that:
 
@@ -15,7 +15,7 @@ Managing large volumes of emails manually is inefficient. This project builds an
 
 ---
 
-## 🧠 Technologies Used
+##  Technologies Used
 
 - Python
 - Flask
@@ -26,7 +26,7 @@ Managing large volumes of emails manually is inefficient. This project builds an
 
 ---
 
-## ⚙️ How It Works
+How It Works
 
 1. User pastes email content
 2. Text is converted to TF-IDF vectors
@@ -36,7 +36,7 @@ Managing large volumes of emails manually is inefficient. This project builds an
 
 ---
 
-## 📊 Model Details
+ Model Details
 
 - Algorithm: Logistic Regression
 - Text Processing: TF-IDF
@@ -48,7 +48,7 @@ Managing large volumes of emails manually is inefficient. This project builds an
 
 ---
 
-## 🔥 Unique Features
+ Unique Features
 
 - Automatic Email Summarization
 - Smart Reply Suggestion System
